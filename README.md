@@ -23,7 +23,7 @@ const expression = "pow(a.b + 1, c)";
 
 const result = evalculist(expression, {
   // variable("pow")(accessor(variable("a"), "b") + 1, variable("c"))
-  variable: (name) => localVars[name] || Math[name]
+  variable: (name) => localVars[name] || Math[name],
   accessor: (object, key) => object[key]
 });
 // result === 4
@@ -32,18 +32,19 @@ const result = evalculist(expression, {
 Known Bugs
 ----------
 
-1. `accessor` parsing currently does not work past one degree of depth. For example,
+- `accessor` parsing currently does not work past one degree of depth for square brackets. For example,
 ```js
-a.b.c
+a['b']['c']
 ```
 currently yields
 ```js
-accessor(variable("a"), "b").variable("c")
+accessor(variable("a"), 'b')['c']
 ```
 which is wrong. It should yield
 ```js
-accessor(accessor(variable("a"), "b"), "c")
+accessor(accessor(variable("a"), 'b'), 'c')
 ```
+
 - `accessor` parsing currently does not work for non-variable objects like function return values. For example,
 ```js
 a().b
@@ -56,6 +57,7 @@ which is wrong. It should yield
 ```js
 accessor(variable("a")(), "b")
 ```
+
 - Assignment operations do not work. This is partially by design, but it would be nice to have the option to define an `assignment` function.
 
 ---

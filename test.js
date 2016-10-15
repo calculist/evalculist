@@ -15,10 +15,10 @@ describe('basic functionality', () => {
   });
 
   it('should parse accessors correctly', () => {
-    const input = 'abc[def] + abc.def';
+    const input = 'abc[def] + abc.def.ghi';
     // TODO abc()[def], abc[def].ghi, and so on
     const output = evalculist(input, true);
-    const expectedOutput = '_brk_acc(_var("abc"), _var("def")) + _dot_acc(_var("abc"), "def")';
+    const expectedOutput = '_brk_acc(_var("abc"), _var("def")) + _dot_acc(_dot_acc(_var("abc"), "def"), "ghi")';
     expect(output).to.eq(expectedOutput);
   });
 
