@@ -64,6 +64,18 @@
   evalculist.variable = function (name) { return evalculist.context[name]; };
   evalculist.accessor = function (object, key) { return object[key]; };
 
+  evalculist.new = function (handlers) {
+    return function (code) { return evalculist(code, handlers); };
+  };
+
+  evalculist.newFromContext = function (context) {
+    var handlers = {
+      variable: function (name) { return context[name]; },
+      accessor: function (object, key) { return object[key]; }
+    };
+    return function (code) { return evalculist(code, handlers); };
+  };
+
   try {
     module.exports = evalculist;
   } catch (e) {

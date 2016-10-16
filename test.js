@@ -50,3 +50,42 @@ describe('basic functionality', () => {
   });
 
 });
+
+describe('evalculist.new', () => {
+
+  it('should create a new function', () => {
+    const evaluate = evalculist.new();
+    expect(evaluate).to.be.a('function');
+  });
+
+  it('should use the provided handlers', () => {
+    const values = { abc: { def: 123 } };
+    const evaluate = evalculist.new({
+      variable: (name) => values[name],
+      accessor: (object, key) => object[key] + 1
+    });
+    const input = 'abc["def"]';
+    const output = evaluate(input);
+    const expectedOutput = values.abc.def + 1
+    expect(output).to.eq(expectedOutput);
+  });
+
+});
+
+describe('evalculist.newFromContext', () => {
+
+  it('should create a new function', () => {
+    const evaluate = evalculist.newFromContext();
+    expect(evaluate).to.be.a('function');
+  });
+
+  it('should use the provided context', () => {
+    const values = { abc: { def: 123 } };
+    const evaluate = evalculist.newFromContext(values);
+    const input = 'abc.def + 1';
+    const output = evaluate(input);
+    const expectedOutput = values.abc.def + 1
+    expect(output).to.eq(expectedOutput);
+  });
+
+});
