@@ -44,33 +44,9 @@ const result = evaluate('pow(a.b + 1, c)');
 Known Bugs
 ----------
 
-- `accessor` parsing currently does not work past one degree of depth for square brackets. For example,
-```js
-a['b']['c']
-```
-currently yields
-```js
-accessor(variable("a"), 'b')['c']
-```
-which is wrong. It should yield
-```js
-accessor(accessor(variable("a"), 'b'), 'c')
-```
-
-- `accessor` parsing currently does not work for non-variable objects like function return values. For example,
-```js
-a().b
-```
-currently yields
-```js
-variable("a")().variable("b")
-```
-which is wrong. It should yield
-```js
-accessor(variable("a")(), "b")
-```
-
 - Assignment operations do not work. This is partially by design, but it would be nice to have the option to define an `assignment` function.
+- Object literals do not work if the keys are not enclosed in quotes (e.g. `{a:1}` does not work, but `{"a":1}` does).
+- Keywords do not work (e.g. `if`,`for`,`var`, etc.).
 
 ---
 
