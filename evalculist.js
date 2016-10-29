@@ -144,7 +144,6 @@
     var string = compile(tokens, 0)
                 .replace(ESCAPED_DOUBLE_QUOTES_PATTERN, '\\"')
                 .replace(ESCAPED_SINGLE_QUOTES_PATTERN, "\\'");
-    handlers || (handlers = evalculist);
     if (handlers === true) return string;
     var fn = new Function(
       VAR_FUNCTION_NAME,
@@ -152,6 +151,12 @@
       DOT_ACC_FUNCTION_NAME,
       "'use strict';return " + string
     );
+    if (!handlers) return function (handlers) {
+      var variable = handlers.variable;
+      var bracketAccessor =  handlers.bracketAccessor || handlers.accessor;
+      var dotAccessor =  handlers.dotAccessor || handlers.accessor;
+      return fn(variable, bracketAccessor, dotAccessor);
+    };
     var variable = handlers.variable;
     var bracketAccessor =  handlers.bracketAccessor || handlers.accessor;
     var dotAccessor =  handlers.dotAccessor || handlers.accessor;
