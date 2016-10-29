@@ -1,6 +1,10 @@
 const expect = require('chai').expect;
 const evalculist = require('./evalculist');
 
+const VAR_FUNCTION_NAME = 'variable';
+const DOT_ACC_FUNCTION_NAME = 'dotAccessor';
+const SQUARE_ACC_FUNCTION_NAME = 'bracketAccessor';
+
 describe('basic functionality', () => {
 
   it('should be a function', () => {
@@ -10,14 +14,21 @@ describe('basic functionality', () => {
   it('should parse variables correctly', () => {
     const input = 'abc + 1e2 * e3';
     const output = evalculist(input, true);
-    const expectedOutput = '_var("abc") + 1e2 * _var("e3")';
+    const expectedOutput = VAR_FUNCTION_NAME + '("abc") + 1e2 * ' + VAR_FUNCTION_NAME + '("e3")';
     expect(output).to.eq(expectedOutput);
   });
 
   it('should parse accessors correctly', () => {
     const input = 'abc()[def].ghi + abc.def(["ghi"])[jkl] + 1.2';
     const output = evalculist(input, true);
-    const expectedOutput = '_dot_acc(_brk_acc(_var("abc")(), _var("def")), "ghi") + _brk_acc(_dot_acc(_var("abc"), "def")(["ghi"]), _var("jkl")) + 1.2';
+    const expectedOutput = DOT_ACC_FUNCTION_NAME +
+      '(' + SQUARE_ACC_FUNCTION_NAME + 
+      '(' + VAR_FUNCTION_NAME + '("abc")(), ' +
+      VAR_FUNCTION_NAME + '("def")), "ghi") + ' +
+      SQUARE_ACC_FUNCTION_NAME +
+      '('+ DOT_ACC_FUNCTION_NAME + '(' +
+      VAR_FUNCTION_NAME + '("abc"), "def")(["ghi"]), ' +
+      VAR_FUNCTION_NAME + '("jkl")) + 1.2';
     expect(output).to.eq(expectedOutput);
   });
 
