@@ -1,10 +1,14 @@
 {
   "name": "evalculist",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "scoped eval for simple js expressions",
   "author": "Dan Allison <dan@calculist.io>",
   "main": "./evalculist",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/calculist/evalculist.git"
+  },
   "devDependencies": {
     "chai": "*",
     "mocha": "*"

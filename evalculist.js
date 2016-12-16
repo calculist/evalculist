@@ -1,6 +1,6 @@
 /**
  * @license
- * evalculist 0.0.1
+ * evalculist 0.1.0
  * Copyright 2016 Dan Allison <dan@calculist.io> and Calculist LLC <http://calculist.io>
  * Released under MIT license
  */
