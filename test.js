@@ -22,7 +22,7 @@ describe('basic functionality', () => {
     const input = 'abc()[def].ghi + abc.def(["ghi"])[jkl] + 1.2';
     const output = evalculist(input, true);
     const expectedOutput = DOT_ACC_FUNCTION_NAME +
-      '(' + SQUARE_ACC_FUNCTION_NAME + 
+      '(' + SQUARE_ACC_FUNCTION_NAME +
       '(' + VAR_FUNCTION_NAME + '("abc")(), ' +
       VAR_FUNCTION_NAME + '("def")), "ghi") + ' +
       SQUARE_ACC_FUNCTION_NAME +
@@ -54,8 +54,11 @@ describe('basic functionality', () => {
   });
 
   it('should parse strings correctly', () => {
-    const input = '"abc \\"def\\" \'ghi" + "\\"jkl" + \'mno\'';
-    const output = evalculist(input, {});
+    let input = '"abc \\"def\\" \'ghi" + "\\"jkl" + \'mno\'';
+    let output = evalculist(input, {});
+    expect(output).to.eq(eval(input));
+    input = '\'abc + "def", ghi\'';
+    output = evalculist(input, {});
     expect(output).to.eq(eval(input));
   });
 
