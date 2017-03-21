@@ -3,11 +3,11 @@ evalculist.js
 
 `evalculist` provides a way to evaluate arbitrary javascript expressions in a controlled way, without exposing global variables. It accomplishes this by parsing the expressions such that variables become strings that are passed to `variable` and `accessor` functions.
 ```js
-myObject.attribute
+foo = myObject.attribute
 ```
 becomes
 ```js
-accessor(variable("myObject"), "attribute")
+assignment("x", accessor(variable("myObject"), "attribute"))
 ```
 
 Usage
@@ -22,7 +22,8 @@ const localVars = {
 };
 const evaluate = evalculist.new({
   variable: (name) => localVars[name] || Math[name],
-  accessor: (object, key) => object[key]
+  accessor: (object, key) => object[key],
+  assignment: (name, value) => (localVars[name] = value)
 });
 const result = evaluate('pow(a.b + 1, c)');
 // result === 4
@@ -44,7 +45,6 @@ const result = evaluate('pow(a.b + 1, c)');
 Known Bugs
 ----------
 
-- Assignment operations do not work. This is partially by design, but it would be nice to have the option to define an `assignment` function.
 - Object literals do not work if the keys are not enclosed in quotes (e.g. `{a:1}` does not work, but `{"a":1}` does).
 - Keywords do not work (e.g. `if`,`for`,`var`, etc.).
 
