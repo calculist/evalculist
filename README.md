@@ -1,13 +1,13 @@
 evalculist.js
 =============
 
-`evalculist` provides a way to evaluate arbitrary javascript expressions in a controlled way, without exposing global variables. It accomplishes this by parsing the expressions such that variables become strings that are passed to `variable` and `accessor` functions.
+`evalculist` provides a way to evaluate arbitrary javascript expressions in a controlled way, without exposing global variables. It accomplishes this by parsing the expressions such that variables become strings that are passed to `variable`, `accessor`, and `assignment` functions.
 ```js
-foo = myObject.attribute
+foo = bar.baz
 ```
 becomes
 ```js
-assignment("x", accessor(variable("myObject"), "attribute"))
+assignment("foo", accessor(variable("bar"), "baz"))
 ```
 
 Usage
