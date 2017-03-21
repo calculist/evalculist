@@ -4,6 +4,7 @@ const evalculist = require('./evalculist');
 const VAR_FUNCTION_NAME = 'variable';
 const DOT_ACC_FUNCTION_NAME = 'dotAccessor';
 const SQUARE_ACC_FUNCTION_NAME = 'bracketAccessor';
+const ASSIGN_FUNCTION_NAME = 'assignment';
 
 describe('basic functionality', () => {
 
@@ -32,6 +33,13 @@ describe('basic functionality', () => {
     expect(output).to.eq(expectedOutput);
   });
 
+  it('should parse assignments correctly', () => {
+    const input = 'abc = 1e2 * e3';
+    const output = evalculist(input, true);
+    const expectedOutput = ASSIGN_FUNCTION_NAME + '("abc", 1e2 * ' + VAR_FUNCTION_NAME + '("e3"))';
+    expect(output).to.eq(expectedOutput);
+  })
+
   it('should use the provided "variable" function', () => {
     const values = { abc: 3, def: 2.8, ghi: 5.1 };
     const input = 'abc + def * ghi';
@@ -51,6 +59,17 @@ describe('basic functionality', () => {
     });
     const expectedOutput = values['abc']['def'] * values['ghi']['jkl'];
     expect(output).to.eq(expectedOutput);
+  });
+
+  it('should use the provided "assignment" function', () => {
+    const values = {};
+    const input = 'abc = 123';
+    const output = evalculist(input, {
+      assignment: (name, val) => (values[name] = val)
+    });
+    const expectedOutput = 123;
+    expect(output).to.eq(expectedOutput);
+    expect(values.abc).to.eq(expectedOutput);
   });
 
   it('should parse strings correctly', () => {
