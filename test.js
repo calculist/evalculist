@@ -81,6 +81,18 @@ describe('basic functionality', () => {
     expect(output).to.eq(eval(input));
   });
 
+  it('should evaluate semicolons correctly', () => {
+    const values = {};
+    const input = 'a = 1;; b = a + 1;';
+    const output = evalculist(input, {
+      variable: (name) => values[name],
+      assignment: (name, val) => (values[name] = val)
+    });
+    expect(output).to.eq(2)
+    expect(values.a).to.eq(1)
+    expect(values.b).to.eq(2)
+  });
+
 });
 
 describe('evalculist.new', () => {
