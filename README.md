@@ -1,6 +1,8 @@
 evalculist.js
 =============
 
+[![Build Status](https://travis-ci.org/calculist/evalculist.svg?branch=master)](https://travis-ci.org/calculist/evalculist)
+
 `evalculist` provides a way to evaluate arbitrary javascript expressions in a controlled way, without exposing global variables. It accomplishes this by parsing the expressions such that variables become strings that are passed to `variable`, `accessor`, and `assignment` functions.
 ```js
 foo = bar.baz

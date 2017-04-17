@@ -9,6 +9,9 @@
     "type": "git",
     "url": "https://github.com/calculist/evalculist.git"
   },
+  "scripts": {
+    "test": "mocha"
+  },
   "devDependencies": {
     "chai": "*",
     "mocha": "*"
