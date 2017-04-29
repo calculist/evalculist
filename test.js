@@ -34,9 +34,12 @@ describe('basic functionality', () => {
   });
 
   it('should parse assignments correctly', () => {
-    const input = 'abc = 1e2 * e3';
+    const input = 'a = 1; b == 2; c === 3; d != 4; e !== 5;';
     const output = evalculist(input, true);
-    const expectedOutput = ASSIGN_FUNCTION_NAME + '("abc", 1e2 * ' + VAR_FUNCTION_NAME + '("e3"))';
+    const expectedOutput = `${ASSIGN_FUNCTION_NAME}("a", 1);` + ('bcde').split('').map((c, i) => {
+      const s = ['==','===','!=','!=='][i]
+      return ` ${VAR_FUNCTION_NAME}("${c}") ${s} ${i + 2}`;
+    }).join(';')
     expect(output).to.eq(expectedOutput);
   })
 
