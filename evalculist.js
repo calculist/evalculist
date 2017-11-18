@@ -63,7 +63,11 @@
           exp = '[' + nextExp + (nextT ? nextT[TOKEN_STRING_INDEX] : '');
         }
         if (expressions.length) {
-          expressions[expressions.length - 1] = exp;
+          if (prevT[TOKEN_TYPE_INDEX] === EXPRESSION_TOKEN) {
+            expressions[expressions.length - 1] += exp;
+          } else {
+            expressions[expressions.length - 1] = exp;
+          }
         } else {
           expressions.push(exp);
         }

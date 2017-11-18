@@ -82,6 +82,7 @@ describe('basic functionality', () => {
     input = '\'abc + "def", ghi\'';
     output = evalculist(input, {});
     expect(output).to.eq(eval(input));
+    expect(evalculist('1 + [2]', true)).to.eq('1 + [2]');
   });
 
   it('should evaluate semicolons correctly', () => {
