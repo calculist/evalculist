@@ -1,55 +1,168 @@
-evalculist.js
-=============
+# evalculist
 
-[![Build Status](https://travis-ci.org/calculist/evalculist.svg?branch=master)](https://travis-ci.org/calculist/evalculist)
+A TypeScript library for evaluating JavaScript expressions in a sandboxed way, without exposing global variables.
 
-`evalculist` provides a way to evaluate arbitrary javascript expressions in a controlled way, without exposing global variables. It accomplishes this by parsing the expressions such that variables become strings that are passed to `variable`, `accessor`, and `assignment` functions.
+## How It Works
+
+evalculist transforms variable references into function calls that you control:
+
 ```js
 foo = bar.baz
 ```
-becomes
+
+becomes:
+
 ```js
-assignment("foo", accessor(variable("bar"), "baz"))
+assignment("foo", dotAccessor(variable("bar"), "baz"))
 ```
 
-Usage
------
+This allows you to intercept all variable access, property access, and assignments, enabling safe evaluation of user-provided expressions.
 
-Using `evalculist.new`
+## Installation
 
-```js
-const localVars = {
-  a: { b: 1 },
-  c: 2
-};
-const evaluate = evalculist.new({
-  variable: (name) => localVars[name] || Math[name],
-  accessor: (object, key) => object[key],
-  assignment: (name, value) => (localVars[name] = value)
-});
-const result = evaluate('pow(a.b + 1, c)');
-// result === 4
+```bash
+npm install evalculist
 ```
 
-Using `evalculist.newFromContext`
+## Usage
+
+### Basic Usage with `evalculist.newFromContext`
+
+The simplest way to use evalculist:
 
 ```js
+import evalculist from 'evalculist';
+
 const context = {
   a: { b: 1 },
   c: 2,
   pow: Math.pow
 };
 const evaluate = evalculist.newFromContext(context);
+
 const result = evaluate('pow(a.b + 1, c)');
 // result === 4
 ```
 
-Known Bugs
-----------
+### Custom Handlers with `evalculist.new`
 
-- Object literals do not work if the keys are not enclosed in quotes (e.g. `{a:1}` does not work, but `{"a":1}` does).
-- Keywords do not work (e.g. `if`,`for`,`var`, etc.).
+For more control, provide custom handler functions:
 
----
+```js
+import evalculist from 'evalculist';
 
-License MIT
+const localVars = {
+  a: { b: 1 },
+  c: 2
+};
+
+const evaluate = evalculist.new({
+  variable: (name) => localVars[name] || Math[name],
+  accessor: (object, key) => object[key],
+  assignment: (name, value) => (localVars[name] = value)
+});
+
+const result = evaluate('pow(a.b + 1, c)');
+// result === 4
+```
+
+### Security-Hardened Handlers
+
+For user-provided expressions, use the safe handlers to block prototype pollution and other attacks:
+
+```js
+import evalculist from 'evalculist';
+import { createSafeHandlers } from 'evalculist/safe';
+
+const context = { price: 100, quantity: 3 };
+const handlers = createSafeHandlers(context);
+const evaluate = evalculist.new(handlers);
+
+// Safe evaluation - dangerous properties are blocked
+evaluate('price * quantity'); // 300
+evaluate('__proto__');        // undefined (blocked)
+evaluate('constructor');      // undefined (blocked)
+```
+
+### Debug Mode
+
+Pass `true` as the second argument to see the compiled output:
+
+```js
+const compiled = evalculist('user.name = "Bob"', true);
+// compiled === 'assignment("user", dotAccessor(variable("user"), "name") = "Bob")'
+```
+
+## API Reference
+
+### `evalculist(code, handlers?)`
+
+Evaluate an expression with optional handlers.
+
+- `code` - The expression string to evaluate
+- `handlers` - Optional handlers object or `true` for debug mode
+
+### `evalculist.new(handlers?)`
+
+Create a reusable evaluator with fixed handlers.
+
+### `evalculist.newFromContext(context)`
+
+Create an evaluator from a simple context object.
+
+### `createSafeHandlers(context, options?)`
+
+Create security-hardened handlers that block dangerous property access.
+
+Options:
+- `allowedProperties` - Set of property names that are always allowed
+- `blockedProperties` - Additional properties to block (defaults include `__proto__`, `constructor`, etc.)
+- `blockedGlobals` - Additional globals to block (defaults include `eval`, `Function`, etc.)
+
+## Handlers Interface
+
+```typescript
+interface Handlers {
+  // Called for variable references: foo → variable("foo")
+  variable: (name: string) => unknown;
+
+  // Called for property access: obj.key → accessor(obj, "key")
+  accessor?: (object: unknown, key: string | number) => unknown;
+
+  // Called for assignments: x = val → assignment("x", val)
+  assignment?: (name: string, value: unknown) => unknown;
+
+  // Optional: separate handlers for dot vs bracket access
+  dotAccessor?: (object: unknown, key: string | number) => unknown;
+  bracketAccessor?: (object: unknown, key: string | number) => unknown;
+}
+```
+
+## Build Outputs
+
+The package provides multiple build formats:
+
+- `dist/index.js` - ESM module
+- `dist/index.cjs` - CommonJS module
+- `dist/index.global.js` - IIFE for browsers (global `evalculist`)
+- `dist/index.d.ts` - TypeScript declarations
+
+## Known Limitations
+
+- Object literals require quoted keys: `{"a": 1}` works, `{a: 1}` does not
+- JavaScript keywords are not supported (`if`, `for`, `var`, etc.)
+- Method calls like `arr.map(fn)` lose `this` binding - use explicit wrapper functions instead
+
+## Development
+
+```bash
+npm install         # Install dependencies
+npm run build       # Build TypeScript to dist/
+npm test            # Run tests
+npm run test:watch  # Run tests in watch mode
+npm run typecheck   # TypeScript type checking
+```
+
+## License
+
+MIT
