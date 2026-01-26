@@ -1,19 +1,64 @@
 {
   "name": "evalculist",
-  "version": "0.2.3",
-  "description": "scoped eval for simple js expressions",
+  "version": "1.0.0-alpha.1",
+  "description": "Safe evaluation of JavaScript expressions with controlled variable access",
   "author": "Dan Allison <dan@calculist.io>",
-  "main": "./evalculist",
   "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./safe": {
+      "import": {
+        "types": "./dist/safe.d.ts",
+        "default": "./dist/safe.js"
+      },
+      "require": {
+        "types": "./dist/safe.d.cts",
+        "default": "./dist/safe.cjs"
+      }
+    }
+  },
+  "browser": "./dist/index.global.js",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/calculist/evalculist.git"
   },
+  "keywords": [
+    "eval",
+    "expression",
+    "sandbox",
+    "safe",
+    "parser",
+    "interpreter"
+  ],
   "scripts": {
-    "test": "mocha"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "chai": "*",
-    "mocha": "*"
+    "@vitest/coverage-v8": "^1.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
   }
 }
