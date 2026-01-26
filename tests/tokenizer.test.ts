@@ -216,6 +216,53 @@ describe('tokenize', () => {
   });
 });
 
+describe('JSON literals', () => {
+  it('should tokenize true as expression, not variable', () => {
+    const result = tokenize('true');
+    expect(result[0][0][0]).toBe(TokenType.EXPRESSION);
+    expect(result[0][0][1]).toBe('true');
+  });
+
+  it('should tokenize false as expression, not variable', () => {
+    const result = tokenize('false');
+    expect(result[0][0][0]).toBe(TokenType.EXPRESSION);
+    expect(result[0][0][1]).toBe('false');
+  });
+
+  it('should tokenize null as expression, not variable', () => {
+    const result = tokenize('null');
+    expect(result[0][0][0]).toBe(TokenType.EXPRESSION);
+    expect(result[0][0][1]).toBe('null');
+  });
+
+  it('should tokenize JSON literals in arrays', () => {
+    const result = tokenize('[true, false, null]');
+    const tokens = result[0];
+    // Literals may be merged with adjacent whitespace/commas in expression tokens
+    const expressions = tokens.filter(t => t[0] === TokenType.EXPRESSION);
+    const allExpText = expressions.map(t => t[1]).join('');
+    expect(allExpText).toContain('true');
+    expect(allExpText).toContain('false');
+    expect(allExpText).toContain('null');
+    // And importantly, they should NOT be variables
+    const variables = tokens.filter(t => t[0] === TokenType.VARIABLE);
+    expect(variables.some(t => t[1] === 'true')).toBe(false);
+    expect(variables.some(t => t[1] === 'false')).toBe(false);
+    expect(variables.some(t => t[1] === 'null')).toBe(false);
+  });
+
+  it('should not confuse similar variable names with JSON literals', () => {
+    // Variables like "trueValue" or "nullable" should still be variables
+    const result1 = tokenize('trueValue');
+    expect(result1[0][0][0]).toBe(TokenType.VARIABLE);
+    expect(result1[0][0][1]).toBe('trueValue');
+
+    const result2 = tokenize('nullable');
+    expect(result2[0][0][0]).toBe(TokenType.VARIABLE);
+    expect(result2[0][0][1]).toBe('nullable');
+  });
+});
+
 describe('restoreEscapedQuotes', () => {
   it('should restore escaped double quotes', () => {
     // This tests the internal placeholder mechanism

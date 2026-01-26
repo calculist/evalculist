@@ -93,6 +93,46 @@ const compiled = evalculist('user.name = "Bob"', true);
 // compiled === 'assignment("user", dotAccessor(variable("user"), "name") = "Bob")'
 ```
 
+### AST Output Mode
+
+Parse expressions into an Abstract Syntax Tree for analysis, transformation, or custom evaluation:
+
+```js
+import evalculist from 'evalculist';
+
+const ast = evalculist.parse('a + b * c');
+// {
+//   type: 'BinaryOp',
+//   operator: '+',
+//   left: { type: 'Variable', name: 'a' },
+//   right: {
+//     type: 'BinaryOp',
+//     operator: '*',
+//     left: { type: 'Variable', name: 'b' },
+//     right: { type: 'Variable', name: 'c' }
+//   }
+// }
+```
+
+The parser correctly handles operator precedence (`*` binds tighter than `+`).
+
+#### AST Node Types
+
+| Node Type | Description | Example |
+|-----------|-------------|---------|
+| `Variable` | Variable reference | `foo` |
+| `Literal` | Number, string, boolean, null | `42`, `"hi"`, `true` |
+| `BinaryOp` | Binary operation | `a + b` |
+| `UnaryOp` | Unary operation | `!x`, `-n` |
+| `DotAccess` | Dot property access | `obj.prop` |
+| `BracketAccess` | Bracket property access | `arr[0]` |
+| `Call` | Function call | `fn(x, y)` |
+| `Assignment` | Variable assignment | `x = 5` |
+| `Array` | Array literal | `[1, 2, 3]` |
+| `Object` | Object literal | `{"a": 1}` |
+| `Conditional` | Ternary operator | `a ? b : c` |
+| `Sequence` | Multiple statements | `a; b; c` |
+
 ## API Reference
 
 ### `evalculist(code, handlers?)`
@@ -109,6 +149,10 @@ Create a reusable evaluator with fixed handlers.
 ### `evalculist.newFromContext(context)`
 
 Create an evaluator from a simple context object.
+
+### `evalculist.parse(code)`
+
+Parse an expression into an AST without evaluating it. Returns an `ASTNode`.
 
 ### `createSafeHandlers(context, options?)`
 

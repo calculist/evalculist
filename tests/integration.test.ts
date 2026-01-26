@@ -199,6 +199,40 @@ describe('edge cases', () => {
     const result = evaluate('[1, 2, 3]');
     expect(result).toEqual([1, 2, 3]);
   });
+
+  it('should handle JSON literal keywords (true, false, null)', () => {
+    const evaluate = evalculist.newFromContext({});
+
+    expect(evaluate('true')).toBe(true);
+    expect(evaluate('false')).toBe(false);
+    expect(evaluate('null')).toBe(null);
+  });
+
+  it('should handle JSON literals in arrays', () => {
+    const evaluate = evalculist.newFromContext({});
+
+    expect(evaluate('[true, false, null]')).toEqual([true, false, null]);
+    expect(evaluate('[1, true, "hello", null]')).toEqual([1, true, 'hello', null]);
+  });
+
+  it('should handle JSON literals in objects', () => {
+    const evaluate = evalculist.newFromContext({});
+
+    expect(evaluate('{"valid": true}')).toEqual({ valid: true });
+    expect(evaluate('{"a": null, "b": false}')).toEqual({ a: null, b: false });
+  });
+
+  it('should handle nested JSON structures', () => {
+    const evaluate = evalculist.newFromContext({});
+
+    expect(evaluate('{"nested": {"a": 1, "b": null}}')).toEqual({
+      nested: { a: 1, b: null },
+    });
+    expect(evaluate('[{"x": true}, {"y": false}]')).toEqual([
+      { x: true },
+      { y: false },
+    ]);
+  });
 });
 
 describe('real-world scenarios', () => {

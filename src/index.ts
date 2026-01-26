@@ -8,7 +8,8 @@ import {
   defaultAssignment,
   createHandlersFromContext,
 } from './handlers/default.js';
-import type { Handlers, Evaluator } from './types.js';
+import { parse } from './parser.js';
+import type { Handlers, Evaluator, ASTNode } from './types.js';
 
 // Re-export types
 export type {
@@ -22,9 +23,30 @@ export type {
   SecurityOptions,
   SafeHandlers,
   ValidationResult,
+  // AST types
+  ASTNode,
+  VariableNode,
+  LiteralNode,
+  DotAccessNode,
+  BracketAccessNode,
+  CallNode,
+  AssignmentNode,
+  BinaryOpNode,
+  UnaryOpNode,
+  ArrayNode,
+  ObjectNode,
+  SequenceNode,
+  ConditionalNode,
 } from './types.js';
 
 export { TokenType } from './types.js';
+
+// Export parser utilities
+export { lex, Parser } from './parser.js';
+export type { LexerToken, LexerTokenType } from './parser.js';
+
+// Re-export parse (already imported above)
+export { parse };
 
 // Re-export handler utilities
 export {
@@ -173,6 +195,30 @@ evalculist.newFromContext = function <T extends Record<string, unknown>>(
 ): Evaluator {
   const handlers = createHandlersFromContext(context);
   return (code: string): unknown => evalculist(code, handlers);
+};
+
+/**
+ * Parse an expression into an Abstract Syntax Tree (AST).
+ *
+ * @param code - The expression to parse
+ * @returns The parsed AST node
+ *
+ * @example
+ * const ast = evalculist.parse('a + b * c');
+ * // {
+ * //   type: 'BinaryOp',
+ * //   operator: '+',
+ * //   left: { type: 'Variable', name: 'a' },
+ * //   right: {
+ * //     type: 'BinaryOp',
+ * //     operator: '*',
+ * //     left: { type: 'Variable', name: 'b' },
+ * //     right: { type: 'Variable', name: 'c' }
+ * //   }
+ * // }
+ */
+evalculist.parse = function (code: string): ASTNode {
+  return parse(code);
 };
 
 // Default export

@@ -106,6 +106,9 @@ export function tokenize(code: string): Token[][] {
                   sqrBrktDepth,
                 ]);
               }
+            } else if (token === 'true' || token === 'false' || token === 'null') {
+              // JSON literal - keep as expression, not variable
+              tokens.push([TokenType.EXPRESSION, token, parenDepth, sqrBrktDepth]);
             } else {
               // Variable name
               tokens.push([TokenType.VARIABLE, token, parenDepth, sqrBrktDepth]);
