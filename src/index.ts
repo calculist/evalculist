@@ -1,5 +1,3 @@
-import { tokenize, restoreEscapedQuotes } from './tokenizer.js';
-import { compileLines } from './compiler.js';
 import { createExecutor } from './executor.js';
 import {
   defaultContext,
@@ -9,6 +7,7 @@ import {
   createHandlersFromContext,
 } from './handlers/default.js';
 import { parse } from './parser.js';
+import { compileASTToLines } from './ast-compiler.js';
 import type { Handlers, Evaluator, ASTNode } from './types.js';
 
 // Re-export types
@@ -47,6 +46,9 @@ export type { LexerToken, LexerTokenType } from './parser.js';
 
 // Re-export parse (already imported above)
 export { parse };
+
+// Export AST compiler utilities
+export { compileAST, compileASTToLines } from './ast-compiler.js';
 
 // Re-export handler utilities
 export {
@@ -90,18 +92,13 @@ function evalculist(
   code: string,
   handlersOrDebug?: Handlers | true,
 ): string | unknown | ((handlers: Handlers) => unknown) {
-  // Tokenize the input
-  const tokenLines = tokenize(code);
-
-  // Compile tokens to code strings
-  let compiledLines = compileLines(tokenLines);
-
-  // Restore escaped quotes
-  compiledLines = compiledLines.map(restoreEscapedQuotes);
+  // Parse to AST, then compile to executable code
+  const ast = parse(code);
+  const compiledLines = compileASTToLines(ast);
 
   // Debug mode - return compiled code string
   if (handlersOrDebug === true) {
-    return compiledLines.join(';');
+    return compiledLines.join('; ');
   }
 
   // Create executor function

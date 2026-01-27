@@ -261,11 +261,16 @@ export class Parser {
   parse(): ASTNode {
     const expressions: ASTNode[] = [];
 
+    // Skip leading semicolons
+    while (this.match('SEMICOLON')) {
+      this.advance();
+    }
+
     while (!this.match('EOF')) {
       expressions.push(this.parseExpression(0));
 
-      // Handle semicolons between statements
-      if (this.match('SEMICOLON')) {
+      // Handle semicolons between statements (including multiple consecutive semicolons)
+      while (this.match('SEMICOLON')) {
         this.advance();
       }
     }

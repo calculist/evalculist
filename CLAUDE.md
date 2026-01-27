@@ -27,9 +27,9 @@ npm run typecheck   # TypeScript type checking
 ```
 src/
 ├── index.ts          # Main API entry point
-├── types.ts          # TypeScript interfaces (Token, Handlers, etc.)
-├── tokenizer.ts      # Expression tokenization
-├── compiler.ts       # Token-to-code compilation
+├── types.ts          # TypeScript interfaces (ASTNode, Handlers, etc.)
+├── parser.ts         # Lexer + Pratt parser → AST
+├── ast-compiler.ts   # AST → executable code strings
 ├── executor.ts       # Code execution via new Function()
 └── handlers/
     ├── default.ts    # Default handlers (permissive)
@@ -38,11 +38,11 @@ src/
 
 ### Core Pipeline
 
-1. **Tokenizer** (`tokenizer.ts`): Splits input into tokens with depth tracking
-   - Token format: `[type, value, parenDepth, bracketDepth]`
-   - Handles strings, operators, identifiers, nested structures
+1. **Parser** (`parser.ts`): Lexes input and parses into AST via Pratt parser
+   - Proper operator precedence handling
+   - Produces typed AST nodes (Variable, Literal, BinaryOp, etc.)
 
-2. **Compiler** (`compiler.ts`): Transforms tokens into executable code
+2. **AST Compiler** (`ast-compiler.ts`): Transforms AST into executable code
    - Variables → `variable("name")`
    - Dot access → `dotAccessor(obj, "key")`
    - Bracket access → `bracketAccessor(obj, key)`
@@ -59,6 +59,9 @@ evalculist(code, handlers)
 // Factory methods
 evalculist.new(handlers)        // Reusable evaluator
 evalculist.newFromContext(ctx)  // Simple context-based evaluator
+
+// AST mode - returns parsed AST
+evalculist.parse(code)
 
 // Debug mode - returns compiled code string
 evalculist(code, true)

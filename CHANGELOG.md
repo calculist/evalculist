@@ -15,6 +15,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 75 new parser tests
 - **JSON literal support** - `true`, `false`, and `null` now work correctly as literals
   - Previously these were incorrectly treated as variable names
+- **AST Compiler** - New `compileAST()` and `compileASTToLines()` functions
+  - Unified parsing pipeline: parse → AST → compile → execute
+  - Eliminates code duplication between tokenizer/compiler and parser
+
+### Changed
+
+- **Evaluation pipeline** - Now uses AST-based compilation internally
+  - `parse(code)` → `compileASTToLines(ast)` → `createExecutor(lines)`
+  - More consistent behavior and proper operator precedence
+
+### Removed
+
+- **tokenizer.ts** - Replaced by `parse()` from parser.ts
+- **compiler.ts** - Replaced by `compileAST()` and `compileASTToLines()` from ast-compiler.ts
 
 ## [1.0.0-alpha.1] - 2026-01-25
 
