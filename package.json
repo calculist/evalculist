@@ -1,6 +1,6 @@
 {
   "name": "evalculist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Safe evaluation of JavaScript expressions with controlled variable access",
   "author": "Dan Allison <dan@calculist.io>",
   "license": "MIT",
