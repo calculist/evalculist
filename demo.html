@@ -3,372 +3,412 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>evalculist - Live Demo</title>
+  <title>Reactive Formulas - evalculist Demo</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      max-width: 900px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 2rem;
       background: #f5f5f5;
       color: #333;
     }
-    h1 {
-      color: #2c3e50;
-      border-bottom: 3px solid #3498db;
-      padding-bottom: 10px;
-    }
-    h2 {
-      color: #34495e;
-      margin-top: 30px;
-    }
-    .description {
-      background: #fff;
-      padding: 15px;
+    h1 { margin-bottom: 0.5rem; }
+    .subtitle { color: #666; margin-bottom: 2rem; }
+    .card {
+      background: white;
       border-radius: 8px;
-      margin-bottom: 20px;
-      border-left: 4px solid #3498db;
-    }
-    .editor-section {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    label {
+    h2 { margin-top: 0; font-size: 1.1rem; color: #555; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field { margin-bottom: 1rem; }
+    .field label {
       display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #2c3e50;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      color: #444;
     }
-    textarea, input[type="text"] {
+    .field input {
       width: 100%;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-      font-size: 14px;
-      padding: 12px;
-      border: 2px solid #ddd;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      transition: border-color 0.2s;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
     }
-    textarea:focus, input[type="text"]:focus {
+    .field input:focus {
       outline: none;
-      border-color: #3498db;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
     }
-    textarea {
-      min-height: 80px;
-      resize: vertical;
+    .formula-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 4px;
     }
-    .output-box {
-      background: #2c3e50;
-      color: #ecf0f1;
-      padding: 15px;
-      border-radius: 6px;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-      font-size: 14px;
-      white-space: pre-wrap;
-      word-break: break-all;
-      margin-bottom: 15px;
-      min-height: 40px;
+    .formula-name {
+      font-weight: 600;
+      min-width: 80px;
+      color: #007bff;
     }
-    .output-box.error {
-      background: #c0392b;
+    .formula-eq { color: #666; }
+    .formula-expr {
+      flex: 1;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9rem;
+      padding: 0.25rem 0.5rem;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 3px;
     }
-    .output-box.result {
-      background: #27ae60;
+    .formula-result {
+      min-width: 80px;
+      text-align: right;
+      font-weight: 600;
+      color: #28a745;
     }
-    .examples-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 10px;
-      margin-bottom: 20px;
+    .formula-error {
+      color: #dc3545;
+      font-size: 0.85rem;
     }
-    .example-btn {
-      background: #3498db;
+    .add-formula {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .add-formula input {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .add-formula input:first-child { width: 100px; }
+    .add-formula input:nth-child(2) { flex: 1; font-family: monospace; }
+    button {
+      padding: 0.5rem 1rem;
+      background: #007bff;
       color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 6px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 13px;
-      text-align: left;
-      transition: background 0.2s;
+      font-size: 0.9rem;
     }
-    .example-btn:hover {
-      background: #2980b9;
+    button:hover { background: #0056b3; }
+    button.delete {
+      background: #dc3545;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
     }
-    .example-btn code {
-      display: block;
-      margin-top: 5px;
-      font-family: 'Monaco', 'Menlo', monospace;
-      font-size: 12px;
-      opacity: 0.9;
+    button.delete:hover { background: #c82333; }
+    .ast-view {
+      margin-top: 0.5rem;
+      padding: 1rem;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow: auto;
     }
-    .row {
-      display: flex;
-      gap: 15px;
+    .help {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 1rem;
     }
-    .row > div {
-      flex: 1;
-    }
-    .context-hint {
-      font-size: 12px;
-      color: #7f8c8d;
-      margin-top: -10px;
-      margin-bottom: 15px;
-    }
-    .transform-arrow {
-      text-align: center;
-      font-size: 24px;
-      color: #3498db;
-      margin: 10px 0;
+    .help code {
+      background: #e9ecef;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
     }
   </style>
 </head>
 <body>
-  <h1>evalculist</h1>
+  <h1>Reactive Formulas</h1>
+  <p class="subtitle">Spreadsheet-style computed properties powered by <strong>evalculist</strong></p>
 
-  <div class="description">
-    <strong>evalculist</strong> evaluates JavaScript expressions in a sandboxed way without exposing global variables.
-    It transforms variable references into function calls you control.
-  </div>
-
-  <h2>Try an Example</h2>
-  <div class="examples-grid">
-    <button class="example-btn" onclick="loadExample(0)">
-      Basic Math
-      <code>x + y * 2</code>
-    </button>
-    <button class="example-btn" onclick="loadExample(1)">
-      Property Access
-      <code>user.profile.name</code>
-    </button>
-    <button class="example-btn" onclick="loadExample(2)">
-      Bracket Access
-      <code>data[key]</code>
-    </button>
-    <button class="example-btn" onclick="loadExample(3)">
-      Assignment
-      <code>result = a + b</code>
-    </button>
-    <button class="example-btn" onclick="loadExample(4)">
-      Function Calls
-      <code>pow(sin(PI/2), 2)</code>
-    </button>
-    <button class="example-btn" onclick="loadExample(5)">
-      Multi-Statement
-      <code>x = 5; y = x * 2; y + 1</code>
-    </button>
-    <button class="example-btn" onclick="loadExample(6)">
-      Chained Methods
-      <code>arr.map(fn).length</code>
-    </button>
-    <button class="example-btn" onclick="loadExample(7)">
-      Mixed Access
-      <code>obj["a"].b[c]</code>
-    </button>
-  </div>
-
-  <h2>Live Editor</h2>
-
-  <div class="editor-section">
-    <label for="expression">Expression</label>
-    <input type="text" id="expression" placeholder="Enter a JavaScript expression..." oninput="update()">
-
-    <label for="context">Context (JSON)</label>
-    <textarea id="context" oninput="update()">{}</textarea>
-    <div class="context-hint">Define variables and functions available to the expression</div>
-
-    <div class="transform-arrow">&#8595;</div>
-
-    <label>Compiled JavaScript</label>
-    <div class="output-box" id="compiled"></div>
-
-    <div class="row">
-      <div>
-        <label>Result</label>
-        <div class="output-box result" id="result"></div>
+  <div class="card">
+    <h2>Base Values</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="price">price</label>
+        <input type="number" id="price" value="100" step="any">
       </div>
-      <div>
-        <label>Result Type</label>
-        <div class="output-box" id="type"></div>
+      <div class="field">
+        <label for="quantity">quantity</label>
+        <input type="number" id="quantity" value="3" step="any">
+      </div>
+      <div class="field">
+        <label for="discount">discount</label>
+        <input type="number" id="discount" value="0.1" step="0.01">
+      </div>
+      <div class="field">
+        <label for="taxRate">taxRate</label>
+        <input type="number" id="taxRate" value="0.08" step="0.01">
       </div>
     </div>
   </div>
 
-  <h2>How It Works</h2>
-  <div class="description">
-    <p>evalculist transforms expressions by replacing:</p>
-    <ul>
-      <li><code>foo</code> &rarr; <code>variable("foo")</code></li>
-      <li><code>foo.bar</code> &rarr; <code>dotAccessor(variable("foo"), "bar")</code></li>
-      <li><code>foo["bar"]</code> &rarr; <code>bracketAccessor(variable("foo"), "bar")</code></li>
-      <li><code>foo = value</code> &rarr; <code>assignment("foo", value)</code></li>
-    </ul>
-    <p>You provide handler functions that control how each operation behaves.</p>
+  <div class="card">
+    <h2>Computed Formulas</h2>
+    <div id="formulas"></div>
+
+    <div class="add-formula">
+      <input type="text" id="newName" placeholder="name">
+      <input type="text" id="newExpr" placeholder="formula expression">
+      <button onclick="addFormula()">Add Formula</button>
+    </div>
+
+    <div class="help">
+      <strong>Try:</strong> <code>subtotal * taxRate</code>, <code>total > 500 ? "Big order" : "Small order"</code>, <code>Math.round(total)</code>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>AST Inspector</h2>
+    <div class="field">
+      <input type="text" id="astInput" placeholder="Enter expression to see AST..." value="price * quantity * (1 - discount)">
+    </div>
+    <div class="ast-view" id="astView"></div>
   </div>
 
   <script src="dist/index.global.js"></script>
   <script>
-    const examples = [
-      {
-        expression: 'x + y * 2',
-        context: { x: 10, y: 5 }
-      },
-      {
-        expression: 'user.profile.name',
-        context: { user: { profile: { name: 'Alice' } } }
-      },
-      {
-        expression: 'data[key]',
-        context: { data: { secret: 42, public: 100 }, key: 'secret' }
-      },
-      {
-        expression: 'result = a + b',
-        context: { a: 15, b: 25 }
-      },
-      {
-        expression: 'pow(sin(PI / 2), 2) + pow(cos(PI / 2), 2)',
-        context: { sin: 'Math.sin', cos: 'Math.cos', pow: 'Math.pow', PI: 'Math.PI' },
-        actualContext: { sin: Math.sin, cos: Math.cos, pow: Math.pow, PI: Math.PI }
-      },
-      {
-        expression: 'x = 5; y = x * 2; y + 1',
-        context: {}
-      },
-      {
-        expression: 'arr.map(fn).length',
-        context: { arr: [1, 2, 3, 4, 5], fn: 'x => x * 2' },
-        actualContext: { arr: [1, 2, 3, 4, 5], fn: x => x * 2 }
-      },
-      {
-        expression: 'obj["a"].b[c]',
-        context: { obj: { a: { b: { x: 100, y: 200 } } }, c: 'y' }
-      }
-    ];
-
-    function loadExample(index) {
-      const ex = examples[index];
-      document.getElementById('expression').value = ex.expression;
-
-      // For display, show readable version of functions
-      const displayContext = ex.context;
-      document.getElementById('context').value = JSON.stringify(displayContext, null, 2);
-
-      // Store actual context for evaluation
-      window.currentActualContext = ex.actualContext || null;
-
-      update();
-    }
-
-    function parseContext(jsonStr) {
-      const parsed = JSON.parse(jsonStr);
-      const result = {};
-
-      for (const [key, value] of Object.entries(parsed)) {
-        if (typeof value === 'string') {
-          // Check if it's a Math function reference
-          if (value.startsWith('Math.')) {
-            const mathProp = value.slice(5);
-            result[key] = Math[mathProp];
-          }
-          // Check if it's an arrow function
-          else if (value.includes('=>')) {
-            try {
-              result[key] = eval(value);
-            } catch {
-              result[key] = value;
-            }
-          }
-          else {
-            result[key] = value;
-          }
-        } else {
-          result[key] = value;
-        }
+    // ReactiveStore - spreadsheet-style reactive computed properties
+    class ReactiveStore {
+      constructor() {
+        this.values = new Map();
+        this.formulas = new Map();
+        this.dependents = new Map();
+        this.listeners = [];
       }
 
-      return result;
-    }
-
-    function update() {
-      const expression = document.getElementById('expression').value;
-      const contextStr = document.getElementById('context').value;
-      const compiledEl = document.getElementById('compiled');
-      const resultEl = document.getElementById('result');
-      const typeEl = document.getElementById('type');
-
-      // Reset error states
-      compiledEl.className = 'output-box';
-      resultEl.className = 'output-box result';
-
-      if (!expression.trim()) {
-        compiledEl.textContent = '(enter an expression)';
-        resultEl.textContent = '';
-        typeEl.textContent = '';
-        return;
+      set(name, value) {
+        this.values.set(name, value);
+        this.propagate(name);
+        this.notify();
       }
 
-      // Show compiled output
-      try {
-        const compiled = evalculist(expression, true);
-        compiledEl.textContent = compiled;
-      } catch (e) {
-        compiledEl.textContent = 'Compile Error: ' + e.message;
-        compiledEl.className = 'output-box error';
-        resultEl.textContent = '';
-        typeEl.textContent = '';
-        return;
-      }
+      define(name, formula) {
+        this.removeDependencies(name);
 
-      // Evaluate
-      try {
-        let context;
-        if (window.currentActualContext) {
-          context = window.currentActualContext;
-          window.currentActualContext = null;
-        } else {
-          context = parseContext(contextStr || '{}');
-        }
-
-        const evaluate = evalculist.newFromContext(context);
-        const result = evaluate(expression);
-
-        resultEl.textContent = formatResult(result);
-        typeEl.textContent = getType(result);
-      } catch (e) {
-        resultEl.textContent = 'Error: ' + e.message;
-        resultEl.className = 'output-box error';
-        typeEl.textContent = '';
-      }
-    }
-
-    function formatResult(value) {
-      if (value === undefined) return 'undefined';
-      if (value === null) return 'null';
-      if (typeof value === 'function') return value.toString();
-      if (typeof value === 'object') {
         try {
-          return JSON.stringify(value, null, 2);
-        } catch {
-          return String(value);
+          const ast = evalculist.parse(formula);
+          const deps = this.extractDependencies(ast);
+
+          if (this.wouldCycle(name, deps, new Set())) {
+            throw new Error('Circular dependency detected');
+          }
+
+          for (const dep of deps) {
+            if (!this.dependents.has(dep)) this.dependents.set(dep, new Set());
+            this.dependents.get(dep).add(name);
+          }
+
+          this.formulas.set(name, { formula, ast, error: null });
+          this.recompute(name);
+          this.notify();
+          return { success: true };
+        } catch (e) {
+          this.formulas.set(name, { formula, ast: null, error: e.message });
+          this.notify();
+          return { success: false, error: e.message };
         }
       }
-      return String(value);
+
+      remove(name) {
+        this.removeDependencies(name);
+        this.formulas.delete(name);
+        this.values.delete(name);
+        this.notify();
+      }
+
+      removeDependencies(name) {
+        for (const [, deps] of this.dependents) {
+          deps.delete(name);
+        }
+      }
+
+      get(name) {
+        return this.values.get(name);
+      }
+
+      extractDependencies(node) {
+        const deps = new Set();
+        const walk = (n) => {
+          if (!n) return;
+          switch (n.type) {
+            case 'Variable': deps.add(n.name); break;
+            case 'BinaryOp': walk(n.left); walk(n.right); break;
+            case 'UnaryOp': walk(n.operand); break;
+            case 'Call': walk(n.callee); n.arguments.forEach(walk); break;
+            case 'DotAccess': walk(n.object); break;
+            case 'BracketAccess': walk(n.object); walk(n.key); break;
+            case 'Conditional': walk(n.test); walk(n.consequent); walk(n.alternate); break;
+            case 'Array': n.elements.forEach(walk); break;
+            case 'Object': n.properties.forEach(p => walk(p.value)); break;
+            case 'Sequence': n.expressions.forEach(walk); break;
+            case 'Assignment': walk(n.value); break;
+          }
+        };
+        walk(node);
+        return deps;
+      }
+
+      wouldCycle(name, deps, visited) {
+        for (const dep of deps) {
+          if (dep === name) return true;
+          if (visited.has(dep)) continue;
+          visited.add(dep);
+          const depFormula = this.formulas.get(dep);
+          if (depFormula && depFormula.ast) {
+            const depDeps = this.extractDependencies(depFormula.ast);
+            if (this.wouldCycle(name, depDeps, visited)) return true;
+          }
+        }
+        return false;
+      }
+
+      recompute(name) {
+        const entry = this.formulas.get(name);
+        if (!entry || entry.error) return;
+
+        try {
+          const result = evalculist.evalculist(entry.formula, {
+            variable: (v) => {
+              if (this.values.has(v)) return this.values.get(v);
+              if (typeof window[v] !== 'undefined') return window[v];
+              return undefined;
+            },
+            accessor: (obj, key) => obj?.[key],
+          });
+          this.values.set(name, result);
+          entry.error = null;
+        } catch (e) {
+          entry.error = e.message;
+          this.values.set(name, undefined);
+        }
+      }
+
+      propagate(changed) {
+        const affected = this.dependents.get(changed);
+        if (!affected) return;
+        for (const name of affected) {
+          this.recompute(name);
+          this.propagate(name);
+        }
+      }
+
+      onChange(fn) {
+        this.listeners.push(fn);
+      }
+
+      notify() {
+        this.listeners.forEach(fn => fn());
+      }
     }
 
-    function getType(value) {
-      if (value === null) return 'null';
-      if (Array.isArray(value)) return 'array';
-      return typeof value;
+    // Initialize store
+    const store = new ReactiveStore();
+
+    // Set up base values
+    ['price', 'quantity', 'discount', 'taxRate'].forEach(name => {
+      const input = document.getElementById(name);
+      store.set(name, parseFloat(input.value) || 0);
+      input.addEventListener('input', () => {
+        store.set(name, parseFloat(input.value) || 0);
+      });
+    });
+
+    // Default formulas
+    store.define('subtotal', 'price * quantity');
+    store.define('discountAmt', 'subtotal * discount');
+    store.define('afterDiscount', 'subtotal - discountAmt');
+    store.define('tax', 'afterDiscount * taxRate');
+    store.define('total', 'afterDiscount + tax');
+
+    // Render formulas
+    function render() {
+      const container = document.getElementById('formulas');
+      container.innerHTML = '';
+
+      for (const [name, entry] of store.formulas) {
+        const row = document.createElement('div');
+        row.className = 'formula-row';
+
+        const value = store.get(name);
+        const displayValue = entry.error
+          ? `<span class="formula-error">${entry.error}</span>`
+          : typeof value === 'number'
+            ? value.toFixed(2)
+            : JSON.stringify(value);
+
+        row.innerHTML = `
+          <span class="formula-name">${name}</span>
+          <span class="formula-eq">=</span>
+          <input class="formula-expr" value="${entry.formula}" data-name="${name}">
+          <span class="formula-result">${displayValue}</span>
+          <button class="delete" onclick="deleteFormula('${name}')">×</button>
+        `;
+
+        const input = row.querySelector('input');
+        input.addEventListener('change', (e) => {
+          store.define(name, e.target.value);
+        });
+
+        container.appendChild(row);
+      }
     }
 
-    // Initialize with first example
-    loadExample(0);
+    function addFormula() {
+      const nameInput = document.getElementById('newName');
+      const exprInput = document.getElementById('newExpr');
+      const name = nameInput.value.trim();
+      const expr = exprInput.value.trim();
+
+      if (!name || !expr) return;
+      if (store.formulas.has(name) || ['price', 'quantity', 'discount', 'taxRate'].includes(name)) {
+        alert('Name already exists or is reserved');
+        return;
+      }
+
+      store.define(name, expr);
+      nameInput.value = '';
+      exprInput.value = '';
+    }
+
+    function deleteFormula(name) {
+      store.remove(name);
+    }
+
+    // AST Inspector
+    const astInput = document.getElementById('astInput');
+    const astView = document.getElementById('astView');
+
+    function updateAST() {
+      try {
+        const ast = evalculist.parse(astInput.value);
+        astView.textContent = JSON.stringify(ast, null, 2);
+      } catch (e) {
+        astView.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    astInput.addEventListener('input', updateAST);
+    updateAST();
+
+    // Re-render on changes
+    store.onChange(render);
+    render();
   </script>
 </body>
 </html>
