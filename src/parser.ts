@@ -45,7 +45,7 @@ export interface LexerToken {
 }
 
 const OPERATORS = new Set([
-  '+', '-', '*', '/', '%',
+  '+', '-', '*', '**', '/', '%',
   '===', '!==', '==', '!=',
   '<=', '>=', '<', '>',
   '&&', '||', '!',
@@ -213,6 +213,8 @@ export function lex(input: string): LexerToken[] {
 // ============================================================================
 
 // Operator precedence (higher = binds tighter)
+const TERNARY_PRECEDENCE = 1.5;
+
 const PRECEDENCE: Record<string, number> = {
   '=': 1,
   '||': 2,
@@ -221,9 +223,10 @@ const PRECEDENCE: Record<string, number> = {
   '<': 5, '>': 5, '<=': 5, '>=': 5,
   '+': 6, '-': 6,
   '*': 7, '/': 7, '%': 7,
+  '**': 8,
 };
 
-const RIGHT_ASSOCIATIVE = new Set(['=']);
+const RIGHT_ASSOCIATIVE = new Set(['=', '**']);
 
 export class Parser {
   private tokens: LexerToken[];
@@ -295,12 +298,13 @@ export class Parser {
     while (true) {
       const token = this.current();
 
-      // Handle ternary operator
+      // Handle ternary operator (precedence between = and ||)
       if (token.type === 'QUESTION') {
+        if (TERNARY_PRECEDENCE < minPrecedence) break;
         this.advance();
         const consequent = this.parseExpression(0);
         this.expect('COLON');
-        const alternate = this.parseExpression(0);
+        const alternate = this.parseExpression(TERNARY_PRECEDENCE);
         left = {
           type: 'Conditional',
           test: left,
