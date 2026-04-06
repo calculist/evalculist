@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-03-31
+
+### Added
+
+- **Exponentiation operator** - Support for `**` operator (e.g., `2 ** 3`)
+
+### Fixed
+
+- **Ternary operator precedence** - Ternary expressions now parse with correct precedence
+
+## [1.0.2] - 2026-03-31
+
+### Added
+
+- **`prepare` script** - Added npm prepare script for git-based installs
+
+## [1.0.1] - 2026-03-30
+
+### Changed
+
+- **Dev dependency updates** - Updated rollup, picomatch, and other dev dependencies to fix security vulnerabilities
+
+## [1.0.0] - 2026-03-30
+
 ### Added
 
 - **AST Output Mode** - New `evalculist.parse(code)` function returns an Abstract Syntax Tree
@@ -18,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **AST Compiler** - New `compileAST()` and `compileASTToLines()` functions
   - Unified parsing pipeline: parse → AST → compile → execute
   - Eliminates code duplication between tokenizer/compiler and parser
+- **CI/CD** - GitHub Actions workflows for CI and releases
+- **Demo app** - Reactive formulas demo application
 
 ### Changed
 
